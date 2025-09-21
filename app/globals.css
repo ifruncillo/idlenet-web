@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-deep-indigo: #1B2240;
+  --color-spring-green: #39E19D;
+  --color-aqua-glow: #64F2C6;
+  --color-warm-white: #FFF9F0;
+  --color-slate: #6C7280;
+}
+
+body {
+  background: #1B2240;
+  color: #FFF9F0;
+}
