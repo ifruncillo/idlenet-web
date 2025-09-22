@@ -1,0 +1,14 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/upload",
+      "has": [
+        {
+          "type": "host",
+          "value": "upload.idlenet.io"
+        }
+      ]
+    }
+  ]
+}
