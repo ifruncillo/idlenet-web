@@ -24,7 +24,8 @@ export default function Dashboard() {
       setUser(user)
     }
     checkUser()
-  }, [router])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     const fetchJobs = async () => {
