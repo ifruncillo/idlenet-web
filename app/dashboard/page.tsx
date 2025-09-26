@@ -10,35 +10,34 @@ const supabase = createClient(
 )
 
 export default function Dashboard() {
-  const [user, setUser] = useState<any>(null)
-  const [jobs, setJobs] = useState<any[]>([])
+  const [user, setUser] = useState<{email?: string} | null>(null)
+  const [jobs, setJobs] = useState<Array<Record<string, string>>>([])
   const [file, setFile] = useState<File | null>(null)
   const [dragActive, setDragActive] = useState(false)
   const [uploading, setUploading] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) router.push('/login')
+      setUser(user)
+    }
     checkUser()
-  }, [])
+  }, [router])
 
   useEffect(() => {
+    const fetchJobs = async () => {
+      if (!user?.email) return
+      const { data } = await supabase
+        .from('jobs')
+        .select('*')
+        .eq('customer_email', user.email)
+        .order('created_at', { ascending: false })
+      if (data) setJobs(data)
+    }
     if (user) fetchJobs()
   }, [user])
-
-  const checkUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) router.push('/login')
-    setUser(user)
-  }
-
-  const fetchJobs = async () => {
-    const { data } = await supabase
-      .from('jobs')
-      .select('*')
-      .eq('customer_email', user.email)
-      .order('created_at', { ascending: false })
-    if (data) setJobs(data)
-  }
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -82,7 +81,7 @@ export default function Dashboard() {
   }
 
   const handleUpload = async () => {
-    if (!file || uploading) return
+    if (!file || uploading || !user?.email) return
     
     setUploading(true)
     const fileName = `job-${Date.now()}-${file.name}`
@@ -103,7 +102,12 @@ export default function Dashboard() {
         })
       
       if (!jobError) {
-        fetchJobs()
+        const { data } = await supabase
+          .from('jobs')
+          .select('*')
+          .eq('customer_email', user.email)
+          .order('created_at', { ascending: false })
+        if (data) setJobs(data)
         setFile(null)
       }
     }
