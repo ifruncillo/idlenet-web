@@ -13,11 +13,11 @@ export default function Login() {
   
   const router = useRouter()
   
-  // Initialize Supabase client with environment variables
+  // Initialize Supabase client with hardcoded credentials
   const supabase = createClient(
-  'https://lltpwuhbuiubcldbprgc.supabase.co',
-  	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdHB3dWhidWl1YmNsZGJwcmdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxNjU2MjQsImV4cCI6MjA3Mjc0MTYyNH0.Yoeyn3w1j3uFQX9nS21JC7UHWA5yHf8818-PVh27tpU'
-)
+    'https://lltpwuhbuiubcldbprgc.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdHB3dWhidWl1YmNsZGJwcmdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxNjU2MjQsImV4cCI6MjA3Mjc0MTYyNH0.Yoeyn3w1j3uFQX9nS21JC7UHWA5yHf8818-PVh27tpU'
+  )
 
   // Handle password-based authentication (both sign in and sign up)
   const handlePasswordAuth = async () => {
@@ -27,7 +27,7 @@ export default function Login() {
     try {
       if (isSignUp) {
         // Create new account with email and password
-        const { data, error } = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -37,13 +37,8 @@ export default function Login() {
         
         if (error) throw error
         
-        if (data?.user?.identities?.length === 0) {
-          setMessage('An account with this email already exists. Please sign in instead.')
-          setIsSignUp(false)
-        } else {
-          setMessage('Account created! Check your email to verify your account, then sign in.')
-          setIsSignUp(false)
-        }
+        setMessage('Account created! Check your email to verify your account, then sign in.')
+        setIsSignUp(false)
       } else {
         // Sign in with existing credentials
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -54,10 +49,13 @@ export default function Login() {
         if (error) throw error
         
         // Successful login - redirect to dashboard
-        router.push('/dashboard')
+        if (data?.user) {
+          router.push('/dashboard')
+        }
       }
-    } catch (error: any) {
-      setMessage(error.message || 'An error occurred during authentication')
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred during authentication'
+      setMessage(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -79,8 +77,9 @@ export default function Login() {
       if (error) throw error
       
       setMessage('Check your email for the login link! You can close this window.')
-    } catch (error: any) {
-      setMessage(error.message || 'Failed to send magic link')
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to send magic link'
+      setMessage(errorMessage)
     } finally {
       setLoading(false)
     }
