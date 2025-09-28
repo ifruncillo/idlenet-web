@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
-  'https://qqsggrbxizugjrzoqkyv.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxc2dncmJ4aXp1Z2pyem9xa3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5MDMzODMsImV4cCI6MjA3NDQ3OTM4M30.LSUvRpJYCDNB8-Je7g5KWVpVgi8K6hR5qHqx7RpUS1o'
+  'https://lltpwuhbuiubcldbprgc.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdHB3dWhidWl1YmNsZGJwcmdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxNjU2MjQsImV4cCI6MjA3Mjc0MTYyNH0.Yoeyn3w1j3uFQX9nS21JC7UHWA5yHf8818-PVh27tpU'
 )
 
 export default function LoginPage() {
