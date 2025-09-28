@@ -73,8 +73,15 @@ export default function LoginPage() {
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <h1 style={{ fontSize: '36px', fontWeight: 'bold', color: '#39E19D', marginBottom: '8px', letterSpacing: '-0.5px' }}>
             IdleNet
-          </h1>
-          <p style={{ color: '#94A3B8', fontSize: '14px' }}>Distributed Computing Network</p>
+          <h1 style={{ fontSize: '36px', fontWeight: 'bold', color: '#39E19D', marginBottom: '8px', letterSpacing: '-0.5px' }}>
+  IdleNet
+</h1>
+<h2 style={{ fontSize: '20px', color: '#F1F5F9', marginBottom: '8px' }}>
+  Route overflow compute jobs here
+</h2>
+<p style={{ color: '#94A3B8', fontSize: '14px' }}>
+  AWS costs 5x more for batch processing. Keep critical workloads there, send the rest here.
+</p>
         </div>
 
         <div style={{
@@ -241,6 +248,11 @@ export default function LoginPage() {
           <p style={{ color: '#64748B', fontSize: '12px', lineHeight: '1.5' }}>
             By signing in, you agree to our Terms of Service<br/>
             80% cheaper than AWS • Processing starts immediately
+	<div style={{ marginTop: '32px', padding: '16px', background: 'rgba(57, 225, 157, 0.1)', borderRadius: '8px', border: '1px solid rgba(57, 225, 157, 0.2)' }}>
+          <p style={{ color: '#39E19D', fontSize: '14px', textAlign: 'center', margin: '0' }}>
+            ✓ API compatible with AWS Batch • ✓ Pay only for compute used • ✓ 5-minute integration
+          </p>
+        </div>
           </p>
         </div>
       </div>
