@@ -10,56 +10,45 @@ const supabase = createClient(
 )
 
 export default function LoginPage() {
-  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [message, setMessage] = useState('')
+  const [isSignUp, setIsSignUp] = useState(false)
+  const [authMethod, setAuthMethod] = useState<'password' | 'magic'>('password')
   const [loading, setLoading] = useState(false)
-  const [isPasswordAuth, setIsPasswordAuth] = useState(true)
-  const [isLogin, setIsLogin] = useState(true)
+  const [message, setMessage] = useState('')
+  const router = useRouter()
 
-  const handleAuth = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleAuth = async () => {
     setLoading(true)
     setMessage('')
-    
+
     try {
-      if (isPasswordAuth) {
-        // Password authentication
-        if (!isLogin) {
-          // Sign up with password
-          const { data, error } = await supabase.auth.signUp({
+      if (authMethod === 'magic') {
+        const { error } = await supabase.auth.signInWithOtp({
+          email,
+          options: {
+            emailRedirectTo: `${window.location.origin}/dashboard`
+          }
+        })
+        if (error) throw error
+        setMessage('Check your email for the magic link!')
+      } else {
+        if (isSignUp) {
+          const { error } = await supabase.auth.signUp({
             email,
             password,
           })
-          
           if (error) throw error
-          
-          // Show success message and switch to login mode
-          setMessage('✅ Success! Check your email to confirm your account, then you can log in.')
-          setEmail('')
-          setPassword('')
-          setIsLogin(true) // Switch to login mode
+          setMessage('Account created! You can now sign in.')
+          setIsSignUp(false)
         } else {
-          // Sign in with password
-          const { data, error } = await supabase.auth.signInWithPassword({
+          const { error } = await supabase.auth.signInWithPassword({
             email,
             password,
           })
-          
           if (error) throw error
-          
           router.push('/dashboard')
         }
-      } else {
-        // Magic link authentication
-        const { data, error } = await supabase.auth.signInWithOtp({
-          email,
-        })
-        
-        if (error) throw error
-        
-        setMessage('✅ Check your email for the login link!')
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'An error occurred'
@@ -69,121 +58,191 @@ export default function LoginPage() {
     }
   }
 
+  const isValid = email && (authMethod === 'magic' || password)
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900">
-      <div className="max-w-md w-full space-y-8 p-10 bg-gray-800 rounded-xl shadow-2xl">
-        <div className="text-center">
-          <h2 className="mt-6 text-3xl font-extrabold text-white">
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    }}>
+      <div style={{ width: '100%', maxWidth: '440px', margin: '0 20px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <h1 style={{ fontSize: '36px', fontWeight: 'bold', color: '#39E19D', marginBottom: '8px', letterSpacing: '-0.5px' }}>
             IdleNet
-          </h2>
-          <p className="mt-2 text-sm text-gray-400">
-            {isLogin ? 'Sign in to your account' : 'Create your account'}
-          </p>
+          </h1>
+          <p style={{ color: '#94A3B8', fontSize: '14px' }}>Distributed Computing Network</p>
         </div>
 
-        {/* Auth Type Toggle */}
-        <div className="flex justify-center space-x-4">
-          <button
-            type="button"
-            onClick={() => setIsPasswordAuth(true)}
-            className={`px-4 py-2 rounded-lg transition-all ${
-              isPasswordAuth 
-                ? 'bg-green-600 text-white' 
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-            }`}
-          >
-            Password Login
-          </button>
-          <button
-            type="button"
-            onClick={() => setIsPasswordAuth(false)}
-            className={`px-4 py-2 rounded-lg transition-all ${
-              !isPasswordAuth 
-                ? 'bg-green-600 text-white' 
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-            }`}
-          >
-            Magic Link
-          </button>
-        </div>
-
-        <form className="mt-8 space-y-6" onSubmit={handleAuth}>
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="your@email.com"
-              />
-            </div>
-
-            {isPasswordAuth && (
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-300">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete={isLogin ? "current-password" : "new-password"}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  placeholder="••••••••"
-                />
-              </div>
-            )}
-          </div>
-
-          {message && (
-            <div className={`rounded-md p-4 ${
-              message.includes('Success') || message.includes('Check your email') 
-                ? 'bg-green-800 text-green-200' 
-                : 'bg-red-800 text-red-200'
-            }`}>
-              <p className="text-sm">{message}</p>
-            </div>
-          )}
-
-          <div>
+        <div style={{
+          background: 'rgba(30, 41, 59, 0.5)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(57, 225, 157, 0.2)',
+          borderRadius: '16px',
+          padding: '32px',
+          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3)'
+        }}>
+          <div style={{
+            display: 'flex',
+            marginBottom: '24px',
+            background: 'rgba(15, 23, 42, 0.5)',
+            borderRadius: '8px',
+            padding: '4px'
+          }}>
             <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => setAuthMethod('password')}
+              style={{
+                flex: 1,
+                padding: '8px',
+                background: authMethod === 'password' ? 'rgba(57, 225, 157, 0.2)' : 'transparent',
+                border: authMethod === 'password' ? '1px solid rgba(57, 225, 157, 0.3)' : '1px solid transparent',
+                borderRadius: '6px',
+                color: authMethod === 'password' ? '#39E19D' : '#94A3B8',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                fontSize: '14px',
+                fontWeight: '500'
+              }}
             >
-              {loading ? 'Processing...' : (
-                isPasswordAuth 
-                  ? (isLogin ? 'Sign In' : 'Sign Up')
-                  : 'Send Magic Link'
-              )}
+              Password Login
+            </button>
+            <button
+              onClick={() => setAuthMethod('magic')}
+              style={{
+                flex: 1,
+                padding: '8px',
+                background: authMethod === 'magic' ? 'rgba(57, 225, 157, 0.2)' : 'transparent',
+                border: authMethod === 'magic' ? '1px solid rgba(57, 225, 157, 0.3)' : '1px solid transparent',
+                borderRadius: '6px',
+                color: authMethod === 'magic' ? '#39E19D' : '#94A3B8',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                fontSize: '14px',
+                fontWeight: '500'
+              }}
+            >
+              Magic Link
             </button>
           </div>
 
-          {isPasswordAuth && (
-            <div className="text-center">
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#CBD5E1', fontSize: '14px', fontWeight: '500' }}>
+              Email Address
+            </label>
+            <input
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                background: 'rgba(15, 23, 42, 0.5)',
+                border: '1px solid rgba(71, 85, 105, 0.3)',
+                borderRadius: '8px',
+                color: '#F1F5F9',
+                fontSize: '14px',
+                outline: 'none',
+                transition: 'border-color 0.2s'
+              }}
+            />
+          </div>
+
+          {authMethod === 'password' && (
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', color: '#CBD5E1', fontSize: '14px', fontWeight: '500' }}>
+                Password
+              </label>
+              <input
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  background: 'rgba(15, 23, 42, 0.5)',
+                  border: '1px solid rgba(71, 85, 105, 0.3)',
+                  borderRadius: '8px',
+                  color: '#F1F5F9',
+                  fontSize: '14px',
+                  outline: 'none',
+                  transition: 'border-color 0.2s'
+                }}
+              />
+            </div>
+          )}
+
+          <button
+            onClick={handleAuth}
+            disabled={!isValid || loading}
+            style={{
+              width: '100%',
+              padding: '12px',
+              background: isValid && !loading ? 'linear-gradient(135deg, #39E19D 0%, #10B981 100%)' : 'rgba(71, 85, 105, 0.3)',
+              border: 'none',
+              borderRadius: '8px',
+              color: isValid && !loading ? '#0F172A' : '#64748B',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: isValid && !loading ? 'pointer' : 'not-allowed',
+              transition: 'all 0.2s',
+              position: 'relative',
+              overflow: 'hidden'
+            }}
+          >
+            {loading ? 'Loading...' : (authMethod === 'magic' ? 'Send Magic Link' : (isSignUp ? 'Sign Up' : 'Sign In'))}
+          </button>
+
+          {message && (
+            <div style={{
+              marginTop: '16px',
+              padding: '12px',
+              background: 'rgba(15, 23, 42, 0.5)',
+              border: '1px solid rgba(57, 225, 157, 0.2)',
+              borderRadius: '8px',
+              color: '#39E19D',
+              fontSize: '14px',
+              textAlign: 'center'
+            }}>
+              {message}
+            </div>
+          )}
+
+          {authMethod === 'password' && (
+            <div style={{ marginTop: '20px', textAlign: 'center' }}>
+              <span style={{ color: '#94A3B8', fontSize: '14px' }}>
+                {isSignUp ? 'Already have an account?' : "Don't have an account?"}
+              </span>
               <button
-                type="button"
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-sm text-green-400 hover:text-green-300"
+                onClick={() => setIsSignUp(!isSignUp)}
+                style={{
+                  marginLeft: '6px',
+                  background: 'none',
+                  border: 'none',
+                  color: '#39E19D',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  textDecoration: 'underline',
+                  textUnderlineOffset: '2px'
+                }}
               >
-                {isLogin 
-                  ? "Don't have an account? Sign Up" 
-                  : "Already have an account? Sign In"}
+                {isSignUp ? 'Sign In' : 'Sign Up'}
               </button>
             </div>
           )}
-        </form>
+        </div>
+
+        <div style={{ marginTop: '24px', textAlign: 'center' }}>
+          <p style={{ color: '#64748B', fontSize: '12px', lineHeight: '1.5' }}>
+            By signing in, you agree to our Terms of Service<br/>
+            80% cheaper than AWS • Processing starts immediately
+          </p>
+        </div>
       </div>
     </div>
   )
