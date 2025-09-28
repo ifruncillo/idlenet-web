@@ -51,9 +51,8 @@ export default function LoginPage() {
         }
       }
     } catch (error) {
-  const errorMessage = error instanceof Error ? error.message : 'An error occurred'
-  setMessage(errorMessage){
-      setMessage(error.message)
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred'
+      setMessage(errorMessage)
     } finally {
       setLoading(false)
     }
