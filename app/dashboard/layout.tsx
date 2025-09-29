@@ -33,11 +33,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   const navItems = [
-    { path: '/dashboard', label: 'Dashboard', icon: '📊' },
-    { path: '/dashboard/jobs', label: 'Jobs', icon: '⚡' },
-    { path: '/dashboard/billing', label: 'Billing', icon: '💳' },
-    { path: '/dashboard/account', label: 'Account', icon: '👤' },
-    { path: '/dashboard/api', label: 'API Docs', icon: '🔧' },
+    { path: '/dashboard', label: 'Dashboard' },
+    { path: '/dashboard/jobs', label: 'Jobs' },
+    { path: '/dashboard/billing', label: 'Billing' },
+    { path: '/dashboard/account', label: 'Account' },
+    { path: '/dashboard/api', label: 'API Docs' },
   ]
 
   return (
@@ -96,8 +96,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 }
               }}
             >
-              <span style={{ fontSize: '18px' }}>{item.icon}</span>
-              <span>{item.label}</span>
+              {item.label}
             </button>
           ))}
         </nav>
