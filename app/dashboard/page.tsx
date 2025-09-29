@@ -9,7 +9,7 @@ const supabase = createClient(
 )
 
 export default function DashboardPage() {
-  const [jobs, setJobs] = useState<any[]>([])
+  const [jobs, setJobs] = useState<Record<string, any>[]>([])
   const [loading, setLoading] = useState(true)
   const [dragActive, setDragActive] = useState(false)
 
@@ -49,7 +49,7 @@ export default function DashboardPage() {
     // Handle file upload here
   }
 
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileInput = () => {
     // Handle file upload here
   }
 
