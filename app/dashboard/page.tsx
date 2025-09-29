@@ -37,6 +37,7 @@ export default function DashboardPage() {
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
         onDrop={handleDrop}
+        onClick={() => document.getElementById('fileInput')?.click()}
         style={{
           border: '2px dashed rgba(57, 225, 157, 0.3)',
           borderRadius: '12px',
@@ -44,12 +45,14 @@ export default function DashboardPage() {
           textAlign: 'center',
           background: dragActive ? 'rgba(57, 225, 157, 0.05)' : 'transparent',
           transition: 'all 0.3s',
-          marginBottom: '48px'
+          marginBottom: '48px',
+          cursor: 'pointer'
         }}
       >
         <div style={{ fontSize: '64px', marginBottom: '24px' }}>📦</div>
         <h2 style={{ fontSize: '24px', marginBottom: '12px' }}>Drop your code here</h2>
         <p style={{ color: '#64748B' }}>or click to browse • Supports JavaScript, Python, WASM</p>
+        <input id="fileInput" type="file" style={{ display: 'none' }} multiple />
       </div>
 
       {/* Jobs Table */}
