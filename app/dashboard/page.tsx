@@ -6,7 +6,16 @@ import { submitJob, getJobs } from './lib/supabase'
 export default function DashboardPage() {
   const [dragActive, setDragActive] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
-  const [jobs, setJobs] = useState<any[]>([])
+  const [jobs, setJobs] = useState<Array<{
+  id: string
+  status: string
+  type?: string
+  estimated_cost?: number
+  actual_cost?: number
+  created_at: string
+  started_at?: string
+  completed_at?: string
+}>>([])
   const [uploading, setUploading] = useState(false)
 
   useEffect(() => {
