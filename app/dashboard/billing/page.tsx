@@ -62,3 +62,14 @@ export default function BillingPage() {
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = 'rgba(57, 225, 157, 0.2)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'rgba(57, 225, 157, 0.1)'
+          }}
+        >
+          Add Payment Method
+        </button>
+      </div>
+    </div>
+  )
+}
