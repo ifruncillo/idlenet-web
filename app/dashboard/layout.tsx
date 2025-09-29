@@ -2,7 +2,7 @@
 
 import { useRouter, usePathname } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 
 const supabase = createClient(
   'https://lltpwuhbuiubcldbprgc.supabase.co',
@@ -14,18 +14,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname()
   const [userEmail, setUserEmail] = useState('')
 
-  useEffect(() => {
-    checkUser()
-  }, [])
-
-  const checkUser = async () => {
+  const checkUser = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       router.push('/login')
     } else {
       setUserEmail(user.email || '')
     }
-  }
+  }, [router])
+
+  useEffect(() => {
+    checkUser()
+  }, [checkUser])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -41,7 +41,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   ]
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#0F172A' }}>
+    <div style={{ 
+      display: 'flex', 
+      minHeight: '100vh', 
+      background: '#0F172A',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    }}>
       {/* Sidebar */}
       <div style={{
         width: '240px',
@@ -49,7 +54,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         borderRight: '1px solid rgba(57, 225, 157, 0.2)',
         display: 'flex',
         flexDirection: 'column',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+        flexShrink: 0
       }}>
         {/* Logo */}
         <div style={{ padding: '24px', borderBottom: '1px solid rgba(71, 85, 105, 0.3)' }}>
@@ -132,7 +137,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
 
       {/* Main content area */}
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div style={{ 
+        flex: 1, 
+        overflowY: 'auto',
+        width: 'calc(100% - 240px)'
+      }}>
         {children}
       </div>
     </div>
