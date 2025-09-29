@@ -51,7 +51,7 @@ export default function JobsPage() {
     }
   }
 
-  const formatDuration = (start: string, end: string) => {
+    const formatDuration = (start: string | undefined, end: string | undefined) => {
     if (!start || !end) return '-'
     const duration = new Date(end).getTime() - new Date(start).getTime()
     const seconds = Math.floor(duration / 1000)
