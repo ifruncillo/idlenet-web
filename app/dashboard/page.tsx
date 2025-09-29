@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 export default function DashboardPage() {
   const [dragActive, setDragActive] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault()
@@ -28,7 +29,7 @@ export default function DashboardPage() {
         Your Computing Dashboard
       </h1>
       <p style={{ color: '#94A3B8', fontSize: '18px', marginBottom: '48px' }}>
-        Upload your workload and pay 80% less than AWS. Processing starts immediately.
+        Upload your workload to the IdleNet distributed compute network.
       </p>
 
       {/* Upload Area */}
@@ -38,6 +39,8 @@ export default function DashboardPage() {
         onDragOver={handleDrag}
         onDrop={handleDrop}
         onClick={() => document.getElementById('fileInput')?.click()}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         style={{
           border: '2px dashed rgba(57, 225, 157, 0.3)',
           borderRadius: '12px',
@@ -46,13 +49,20 @@ export default function DashboardPage() {
           background: dragActive ? 'rgba(57, 225, 157, 0.05)' : 'transparent',
           transition: 'all 0.3s',
           marginBottom: '48px',
-          cursor: 'pointer'
+          cursor: 'pointer',
+          boxShadow: isHovered ? '0 0 30px rgba(57, 225, 157, 0.3)' : 'none'
         }}
       >
         <div style={{ fontSize: '64px', marginBottom: '24px' }}>📦</div>
         <h2 style={{ fontSize: '24px', marginBottom: '12px' }}>Drop your code here</h2>
         <p style={{ color: '#64748B' }}>or click to browse • Supports JavaScript, Python, WASM</p>
-        <input id="fileInput" type="file" style={{ display: 'none' }} multiple />
+        <input 
+          id="fileInput" 
+          type="file" 
+          style={{ display: 'none' }} 
+          multiple 
+          accept=".js,.py,.wasm,.jsx,.ts,.tsx,.mjs,.rs,.go,.c,.cpp"
+        />
       </div>
 
       {/* Jobs Table */}
