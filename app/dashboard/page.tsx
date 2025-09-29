@@ -1,10 +1,24 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { submitJob, getJobs } from './lib/supabase'
 
 export default function DashboardPage() {
   const [dragActive, setDragActive] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
+  const [jobs, setJobs] = useState<any[]>([])
+  const [uploading, setUploading] = useState(false)
+
+  useEffect(() => {
+    loadJobs()
+    const interval = setInterval(loadJobs, 5000) // Refresh every 5 seconds
+    return () => clearInterval(interval)
+  }, [])
+
+  const loadJobs = async () => {
+    const data = await getJobs()
+    setJobs(data)
+  }
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault()
@@ -16,11 +30,41 @@ export default function DashboardPage() {
     }
   }
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
     setDragActive(false)
-    // Handle file upload here
+    
+    const files = Array.from(e.dataTransfer.files)
+    await handleFiles(files)
+  }
+
+  const handleFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    await handleFiles(files)
+  }
+
+  const handleFiles = async (files: File[]) => {
+    setUploading(true)
+    for (const file of files) {
+      try {
+        await submitJob(file)
+      } catch (error) {
+        console.error('Error submitting job:', error)
+      }
+    }
+    setUploading(false)
+    loadJobs()
+  }
+
+  const getStatusColor = (status: string) => {
+    switch(status) {
+      case 'completed': return '#10B981'
+      case 'pending': return '#FCD34D'
+      case 'assigned': return '#3B82F6'
+      case 'failed': return '#EF4444'
+      default: return '#64748B'
+    }
   }
 
   return (
@@ -54,7 +98,9 @@ export default function DashboardPage() {
         }}
       >
         <div style={{ fontSize: '64px', marginBottom: '24px' }}>📦</div>
-        <h2 style={{ fontSize: '24px', marginBottom: '12px' }}>Drop your code here</h2>
+        <h2 style={{ fontSize: '24px', marginBottom: '12px' }}>
+          {uploading ? 'Uploading...' : 'Drop your code here'}
+        </h2>
         <p style={{ color: '#64748B' }}>or click to browse • Supports JavaScript, Python, WASM</p>
         <input 
           id="fileInput" 
@@ -62,66 +108,56 @@ export default function DashboardPage() {
           style={{ display: 'none' }} 
           multiple 
           accept=".js,.py,.wasm,.jsx,.ts,.tsx,.mjs,.rs,.go,.c,.cpp"
+          onChange={handleFileInput}
         />
       </div>
 
       {/* Jobs Table */}
       <div>
         <h2 style={{ fontSize: '24px', color: '#39E19D', marginBottom: '24px' }}>
-          Your Jobs (3)
+          Your Jobs ({jobs.length})
         </h2>
         <div style={{
           background: 'rgba(30, 41, 59, 0.5)',
           borderRadius: '12px',
           overflow: 'hidden'
         }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid rgba(71, 85, 105, 0.3)' }}>
-                <th style={{ padding: '16px', textAlign: 'left', color: '#39E19D' }}>File</th>
-                <th style={{ padding: '16px', textAlign: 'left', color: '#39E19D' }}>Status</th>
-                <th style={{ padding: '16px', textAlign: 'left', color: '#39E19D' }}>Cost</th>
-                <th style={{ padding: '16px', textAlign: 'left', color: '#39E19D' }}>Time</th>
-                <th style={{ padding: '16px', textAlign: 'left', color: '#39E19D' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr style={{ borderBottom: '1px solid rgba(71, 85, 105, 0.2)' }}>
-                <td style={{ padding: '16px' }}>test-job.js</td>
-                <td style={{ padding: '16px', color: '#FCD34D' }}>pending</td>
-                <td style={{ padding: '16px' }}>$0.00</td>
-                <td style={{ padding: '16px', color: '#64748B' }}>~15s</td>
-                <td style={{ padding: '16px' }}>
-                  <button style={{
-                    padding: '4px 12px',
-                    background: 'rgba(239, 68, 68, 0.1)',
-                    border: '1px solid rgba(239, 68, 68, 0.2)',
-                    borderRadius: '4px',
-                    color: '#EF4444',
-                    fontSize: '12px',
-                    cursor: 'pointer'
-                  }}>Cancel</button>
-                </td>
-              </tr>
-              <tr>
-                <td style={{ padding: '16px' }}>test-job.js</td>
-                <td style={{ padding: '16px', color: '#FCD34D' }}>pending</td>
-                <td style={{ padding: '16px' }}>$0.00</td>
-                <td style={{ padding: '16px', color: '#64748B' }}>~15s</td>
-                <td style={{ padding: '16px' }}>
-                  <button style={{
-                    padding: '4px 12px',
-                    background: 'rgba(239, 68, 68, 0.1)',
-                    border: '1px solid rgba(239, 68, 68, 0.2)',
-                    borderRadius: '4px',
-                    color: '#EF4444',
-                    fontSize: '12px',
-                    cursor: 'pointer'
-                  }}>Cancel</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          {jobs.length === 0 ? (
+            <p style={{ padding: '32px', textAlign: 'center', color: '#64748B' }}>
+              No jobs yet. Upload a file to get started!
+            </p>
+          ) : (
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid rgba(71, 85, 105, 0.3)' }}>
+                  <th style={{ padding: '16px', textAlign: 'left', color: '#39E19D' }}>Job ID</th>
+                  <th style={{ padding: '16px', textAlign: 'left', color: '#39E19D' }}>Status</th>
+                  <th style={{ padding: '16px', textAlign: 'left', color: '#39E19D' }}>Cost</th>
+                  <th style={{ padding: '16px', textAlign: 'left', color: '#39E19D' }}>Created</th>
+                </tr>
+              </thead>
+              <tbody>
+                {jobs.slice(0, 5).map((job, i) => (
+                  <tr key={job.id} style={{ 
+                    borderBottom: i < jobs.length - 1 ? '1px solid rgba(71, 85, 105, 0.2)' : 'none' 
+                  }}>
+                    <td style={{ padding: '16px', fontFamily: 'monospace', fontSize: '12px' }}>
+                      {job.id.slice(0, 8)}...
+                    </td>
+                    <td style={{ padding: '16px', color: getStatusColor(job.status) }}>
+                      {job.status}
+                    </td>
+                    <td style={{ padding: '16px' }}>
+                      ${job.estimated_cost || '0.00'}
+                    </td>
+                    <td style={{ padding: '16px', color: '#64748B' }}>
+                      {new Date(job.created_at).toLocaleString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>
