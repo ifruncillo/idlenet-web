@@ -1,6 +1,20 @@
 'use client'
 
 export default function JobsPage() {
+  const handleExportCSV = () => {
+    const csvContent = `Job ID,File,Status,Started,Duration,Cost
+#j-001,test-job.js,completed,2 hours ago,12s,$0.02
+#j-002,process.py,running,5 min ago,5m 23s,$0.14
+#j-003,render.wasm,queued,-,-,-`
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'jobs-export.csv'
+    a.click()
+  }
+
   return (
     <div style={{ padding: '32px', color: '#F1F5F9' }}>
       <h1 style={{ fontSize: '32px', marginBottom: '24px', color: '#39E19D' }}>
@@ -51,6 +65,30 @@ export default function JobsPage() {
           </tbody>
         </table>
       </div>
+
+      <button
+        onClick={handleExportCSV}
+        style={{
+          marginTop: '24px',
+          padding: '12px 24px',
+          background: 'rgba(57, 225, 157, 0.1)',
+          border: '1px solid rgba(57, 225, 157, 0.3)',
+          borderRadius: '8px',
+          color: '#39E19D',
+          fontSize: '14px',
+          fontWeight: '500',
+          cursor: 'pointer',
+          transition: 'all 0.2s'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = 'rgba(57, 225, 157, 0.2)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'rgba(57, 225, 157, 0.1)'
+        }}
+      >
+        Export as CSV
+      </button>
     </div>
   )
 }
