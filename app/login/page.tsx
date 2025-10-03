@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
+import Link from 'next/link'
 
 const supabase = createClient(
   'https://lltpwuhbuiubcldbprgc.supabase.co',
@@ -178,6 +179,22 @@ export default function LoginPage() {
                   transition: 'border-color 0.2s'
                 }}
               />
+              <div style={{ marginTop: '8px', textAlign: 'right' }}>
+                <Link 
+                  href="/reset-password"
+                  style={{
+                    color: '#39E19D',
+                    fontSize: '13px',
+                    textDecoration: 'none',
+                    opacity: 0.8,
+                    transition: 'opacity 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                  onMouseLeave={(e) => e.currentTarget.style.opacity = '0.8'}
+                >
+                  Forgot Password?
+                </Link>
+              </div>
             </div>
           )}
 
