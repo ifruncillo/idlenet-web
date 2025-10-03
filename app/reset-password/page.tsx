@@ -55,7 +55,7 @@ export default function ResetPasswordPage() {
             Reset Your Password
           </h2>
           <p style={{ color: '#94A3B8', fontSize: '14px' }}>
-            Enter your email and we'll send you a reset link
+            Enter your email and we&apos;ll send you a reset link
           </p>
         </div>
 
