@@ -1,0 +1,8 @@
+const fetchJobs = async () => {
+  const { data } = await supabase
+    .from('jobs')
+    .select('*')
+    .eq('customer_email', user?.email)  // ADD THIS LINE
+    .order('created_at', { ascending: false })
+  if (data) setJobs(data)
+}
