@@ -49,7 +49,7 @@ export default function Dashboard() {
     const { data } = await supabase.storage
       .from('job-artifacts')
       .download(artifactUrl)
-    
+
     if (data) {
       const url = URL.createObjectURL(data)
       const a = document.createElement('a')
@@ -60,6 +60,14 @@ export default function Dashboard() {
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
     }
+  }
+
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes'
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
   }
 
   const handleDrag = (e: React.DragEvent) => {
@@ -83,14 +91,14 @@ export default function Dashboard() {
 
   const handleUpload = async () => {
     if (!file || uploading || !user?.email) return
-    
+
     setUploading(true)
     const fileName = `job-${Date.now()}-${file.name}`
-    
+
     const { error: uploadError } = await supabase.storage
       .from('job-artifacts')
       .upload(fileName, file)
-      
+
     if (!uploadError) {
       const { error: jobError } = await supabase
         .from('jobs')
@@ -101,7 +109,7 @@ export default function Dashboard() {
           customer_email: user.email,
           estimated_cost: (file.size / 1024 / 1024 * 0.002).toFixed(4)
         })
-      
+
       if (!jobError) {
         const { data } = await supabase
           .from('jobs')
@@ -125,9 +133,9 @@ export default function Dashboard() {
 
   return (
     <div className={styles.uploadContainer}>
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
         alignItems: 'center',
         maxWidth: '768px',
         margin: '0 auto 24px',
@@ -137,7 +145,7 @@ export default function Dashboard() {
           <span style={{ color: '#6C7280' }}>Logged in as: </span>
           {user?.email}
         </div>
-        <button 
+        <button
           onClick={handleLogout}
           style={{
             background: 'transparent',
@@ -214,7 +222,7 @@ export default function Dashboard() {
             {uploading ? "Processing Upload..." : "Submit to IdleNet →"}
           </button>
         )}
-        
+
         <div style={{ marginTop: '48px' }}>
           <h2 style={{ color: '#39E19D', fontSize: '1.5rem', marginBottom: '24px' }}>
             Your Jobs ({jobs.length})
@@ -242,7 +250,7 @@ export default function Dashboard() {
                       {job.status}
                     </td>
                     <td style={{ padding: '12px', color: '#64F2C6' }}>
-                      ${job.status === 'completed' 
+                      ${job.status === 'completed'
                         ? (job.actual_cost || '0.00')
                         : (job.estimated_cost || '0.00')}
                     </td>
@@ -251,22 +259,49 @@ export default function Dashboard() {
                         ? calculateDuration(job.started_at, job.completed_at)
                         : '~15s'}
                     </td>
-                    <td style={{ padding: '12px' }}>
-                      {job.status === 'completed' && job.artifact_url && (
+                    <td style={{ padding: '12px', display: 'flex', gap: '8px' }}>
+                      {job.artifact_url && (
                         <button
                           onClick={() => handleDownload(job.artifact_url)}
                           style={{
                             background: 'transparent',
-                            border: '1px solid #39E19D',
+                            border: '1px solid rgba(57, 225, 157, 0.5)',
                             color: '#39E19D',
                             padding: '4px 12px',
                             borderRadius: '6px',
                             cursor: 'pointer',
                             fontSize: '12px'
                           }}
+                          title="Download original file you uploaded"
                         >
-                          Download
+                          Input
                         </button>
+                      )}
+                      {job.status === 'completed' && job.result_url && (
+                        
+                          href={job.result_url}
+                          download
+                          style={{
+                            background: '#39E19D',
+                            border: '1px solid #39E19D',
+                            color: '#0A0E27',
+                            padding: '4px 12px',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontSize: '12px',
+                            textDecoration: 'none',
+                            display: 'inline-block',
+                            fontWeight: '600'
+                          }}
+                          title={`Download result (${job.result_size_bytes ? formatBytes(parseInt(job.result_size_bytes)) : 'unknown size'})`}
+                        >
+                          ✓ Result
+                        </a>
+                      )}
+                      {job.status === 'completed' && !job.result_url && (
+                        <span style={{ color: '#6C7280', fontSize: '12px', fontStyle: 'italic' }}>
+                          No result
+                        </span>
                       )}
                     </td>
                   </tr>
