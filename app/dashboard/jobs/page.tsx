@@ -13,6 +13,7 @@ export default function JobsPage() {
     created_at: string
     started_at?: string
     completed_at?: string
+    result_url?: string
   }>>([])
 
   useEffect(() => {
@@ -26,12 +27,34 @@ export default function JobsPage() {
     setJobs(data)
   }
 
+  const handleDownload = async (jobId: string) => {
+    try {
+      const response = await fetch(`/api/jobs/${jobId}/download`)
+      if (!response.ok) {
+        const error = await response.json()
+        alert(`Download failed: ${error.error}`)
+        return
+      }
+      
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `job-${jobId}-result.txt`
+      a.click()
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Download error:', error)
+      alert('Failed to download result')
+    }
+  }
+
   const handleExportCSV = () => {
     const headers = 'Job ID,Status,Type,Cost,Created,Started,Completed\n'
-    const rows = jobs.map(job => 
+    const rows = jobs.map(job =>
       `${job.id},${job.status},${job.type || 'compute'},${job.estimated_cost || 0},${job.created_at},${job.started_at || ''},${job.completed_at || ''}`
     ).join('\n')
-    
+
     const csvContent = headers + rows
     const blob = new Blob([csvContent], { type: 'text/csv' })
     const url = window.URL.createObjectURL(blob)
@@ -46,12 +69,13 @@ export default function JobsPage() {
       case 'completed': return '#10B981'
       case 'pending': return '#FCD34D'
       case 'assigned': return '#3B82F6'
+      case 'running': return '#3B82F6'
       case 'failed': return '#EF4444'
       default: return '#64748B'
     }
   }
 
-    const formatDuration = (start: string | undefined, end: string | undefined) => {
+  const formatDuration = (start: string | undefined, end: string | undefined) => {
     if (!start || !end) return '-'
     const duration = new Date(end).getTime() - new Date(start).getTime()
     const seconds = Math.floor(duration / 1000)
@@ -74,7 +98,7 @@ export default function JobsPage() {
       <h1 style={{ fontSize: '32px', marginBottom: '24px', color: '#39E19D' }}>
         All Jobs
       </h1>
-      
+
       <div style={{
         background: 'rgba(30, 41, 59, 0.5)',
         borderRadius: '12px',
@@ -94,12 +118,13 @@ export default function JobsPage() {
                 <th style={{ padding: '16px', textAlign: 'left', color: '#39E19D' }}>Started</th>
                 <th style={{ padding: '16px', textAlign: 'left', color: '#39E19D' }}>Duration</th>
                 <th style={{ padding: '16px', textAlign: 'left', color: '#39E19D' }}>Cost</th>
+                <th style={{ padding: '16px', textAlign: 'left', color: '#39E19D' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {jobs.map((job, i) => (
-                <tr key={job.id} style={{ 
-                  borderBottom: i < jobs.length - 1 ? '1px solid rgba(71, 85, 105, 0.2)' : 'none' 
+                <tr key={job.id} style={{
+                  borderBottom: i < jobs.length - 1 ? '1px solid rgba(71, 85, 105, 0.2)' : 'none'
                 }}>
                   <td style={{ padding: '16px', fontFamily: 'monospace', fontSize: '14px' }}>
                     {job.id.slice(0, 8)}...
@@ -118,6 +143,34 @@ export default function JobsPage() {
                   </td>
                   <td style={{ padding: '16px' }}>
                     ${job.actual_cost || job.estimated_cost || '0.00'}
+                  </td>
+                  <td style={{ padding: '16px' }}>
+                    {job.status === 'completed' && job.result_url ? (
+                      <button
+                        onClick={() => handleDownload(job.id)}
+                        style={{
+                          padding: '6px 12px',
+                          background: 'rgba(57, 225, 157, 0.1)',
+                          border: '1px solid rgba(57, 225, 157, 0.3)',
+                          borderRadius: '6px',
+                          color: '#39E19D',
+                          fontSize: '12px',
+                          fontWeight: '500',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'rgba(57, 225, 157, 0.2)'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgba(57, 225, 157, 0.1)'
+                        }}
+                      >
+                        Download
+                      </button>
+                    ) : (
+                      <span style={{ color: '#64748B', fontSize: '12px' }}>-</span>
+                    )}
                   </td>
                 </tr>
               ))}

@@ -131,6 +131,26 @@ export default function Dashboard() {
     return `${minutes}m ${seconds % 60}s`
   }
 
+  const handleResultDownload = async (jobId: string) => {
+    try {
+      const response = await fetch(`/api/jobs/${jobId}/download`)
+      if (!response.ok) {
+        alert('Failed to download result')
+        return
+      }
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `job-${jobId}-result.txt`
+      a.click()
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Download error:', error)
+      alert('Failed to download result')
+    }
+  }
+
   return (
     <div className={styles.uploadContainer}>
       <div style={{
@@ -278,9 +298,8 @@ export default function Dashboard() {
                         </button>
                       )}
                       {job.status === 'completed' && job.result_url && (
-                        
-                          href={job.result_url}
-                          download
+                        <button
+                          onClick={() => handleResultDownload(job.id)}
                           style={{
                             background: '#39E19D',
                             border: '1px solid #39E19D',
@@ -289,14 +308,12 @@ export default function Dashboard() {
                             borderRadius: '6px',
                             cursor: 'pointer',
                             fontSize: '12px',
-                            textDecoration: 'none',
-                            display: 'inline-block',
                             fontWeight: '600'
                           }}
                           title={`Download result (${job.result_size_bytes ? formatBytes(parseInt(job.result_size_bytes)) : 'unknown size'})`}
                         >
                           ✓ Result
-                        </a>
+                        </button>
                       )}
                       {job.status === 'completed' && !job.result_url && (
                         <span style={{ color: '#6C7280', fontSize: '12px', fontStyle: 'italic' }}>
