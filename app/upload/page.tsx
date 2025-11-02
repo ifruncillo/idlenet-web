@@ -48,9 +48,9 @@ export default function UploadPage() {
       const jobData = await jobResponse.json();
       alert(`Job submitted successfully! ID: ${jobData.jobId}`);
       setFile(null);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Upload failed:', error);
-      alert(`Upload failed: ${error.message}`);
+      alert(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setUploading(false);
     }

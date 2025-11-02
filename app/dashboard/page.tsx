@@ -101,9 +101,9 @@ export default function Dashboard() {
       // Optimistic update: add new job to the list
       await fetchJobs()
       setFile(null)
-    } catch (error: any) {
+    } catch (error) {
       console.error('Upload failed:', error)
-      alert(`Upload failed: ${error.message}`)
+      alert(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setUploading(false)
     }
