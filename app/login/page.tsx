@@ -2,13 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@supabase/supabase-js'
-import Link from 'next/link'
-
-const supabase = createClient(
-  'https://lltpwuhbuiubcldbprgc.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdHB3dWhidWl1YmNsZGJwcmdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxNjU2MjQsImV4cCI6MjA3Mjc0MTYyNH0.Yoeyn3w1j3uFQX9nS21JC7UHWA5yHf8818-PVh27tpU'
-)
+import { supabase } from '@/lib/supabase'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -40,7 +34,7 @@ export default function LoginPage() {
             password,
           })
           if (error) throw error
-          setMessage('Success! Check your email to confirm your account, then you can sign in.')
+          setMessage('Account created! You can now sign in.')
           setIsSignUp(false)
         } else {
           const { error } = await supabase.auth.signInWithPassword({
@@ -52,8 +46,7 @@ export default function LoginPage() {
         }
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'An error occurred'
-      setMessage(errorMessage)
+      setMessage(error instanceof Error ? error.message : 'An error occurred')
     } finally {
       setLoading(false)
     }
@@ -75,12 +68,7 @@ export default function LoginPage() {
           <h1 style={{ fontSize: '36px', fontWeight: 'bold', color: '#39E19D', marginBottom: '8px', letterSpacing: '-0.5px' }}>
             IdleNet
           </h1>
-          <h2 style={{ fontSize: '20px', color: '#F1F5F9', marginBottom: '8px' }}>
-            Route overflow compute jobs here
-          </h2>
-          <p style={{ color: '#94A3B8', fontSize: '14px' }}>
-            AWS costs 5x more for batch processing. Keep critical workloads there, send the rest here.
-          </p>
+          <p style={{ color: '#94A3B8', fontSize: '14px' }}>Distributed Computing Network</p>
         </div>
 
         <div style={{
@@ -179,22 +167,6 @@ export default function LoginPage() {
                   transition: 'border-color 0.2s'
                 }}
               />
-              <div style={{ marginTop: '8px', textAlign: 'right' }}>
-                <Link 
-                  href="/reset-password"
-                  style={{
-                    color: '#39E19D',
-                    fontSize: '13px',
-                    textDecoration: 'none',
-                    opacity: 0.8,
-                    transition: 'opacity 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-                  onMouseLeave={(e) => e.currentTarget.style.opacity = '0.8'}
-                >
-                  Forgot Password?
-                </Link>
-              </div>
             </div>
           )}
 
@@ -257,12 +229,6 @@ export default function LoginPage() {
               </button>
             </div>
           )}
-        </div>
-
-        <div style={{ marginTop: '32px', padding: '16px', background: 'rgba(57, 225, 157, 0.1)', borderRadius: '8px', border: '1px solid rgba(57, 225, 157, 0.2)' }}>
-          <p style={{ color: '#39E19D', fontSize: '14px', textAlign: 'center', margin: '0' }}>
-            ✓ API compatible with AWS Batch • ✓ Pay only for compute used • ✓ 5-minute integration
-          </p>
         </div>
 
         <div style={{ marginTop: '24px', textAlign: 'center' }}>
