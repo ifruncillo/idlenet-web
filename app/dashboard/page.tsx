@@ -1,6 +1,7 @@
 'use client'
 
 import { supabase } from '@/lib/supabase'
+import { JOB_POLL_INTERVAL, PRICE_PER_MB } from '@/lib/constants'
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import FileDropzone from '@/components/FileDropzone'
@@ -39,13 +40,13 @@ export default function Dashboard() {
     if (user) fetchJobs()
   }, [user, fetchJobs])
 
-  // Poll for job status updates every 5 seconds
+  // Poll for job status updates
   useEffect(() => {
     if (!user) return
 
     const interval = setInterval(() => {
       fetchJobs()
-    }, 5000)
+    }, JOB_POLL_INTERVAL)
 
     return () => clearInterval(interval)
   }, [user, fetchJobs])
@@ -92,7 +93,7 @@ export default function Dashboard() {
           status: 'pending',
           type: 'user-upload',
           customer_email: user.email,
-          estimated_cost: (file.size / 1024 / 1024 * 0.002).toFixed(4)
+          estimated_cost: (file.size / 1024 / 1024 * PRICE_PER_MB).toFixed(4)
         })
 
       if (jobError) throw jobError

@@ -1,10 +1,8 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Roboto:wght@400&display=swap");
-
 .uploadContainer {
   min-height: 100vh;
   background: linear-gradient(135deg, #1B2240 0%, #0f1729 100%);
   padding: 2rem;
-  font-family: "Roboto", sans-serif;
+  font-family: "Roboto", "Geist", sans-serif;
 }
 
 .card {
@@ -19,7 +17,7 @@
 }
 
 .title {
-  font-family: "Poppins", sans-serif;
+  font-family: "Poppins", "Geist", sans-serif;
   font-weight: 600;
   font-size: 3rem;
   line-height: 3.5rem;
@@ -28,7 +26,7 @@
 }
 
 .subtitle {
-  font-family: "Roboto", sans-serif;
+  font-family: "Roboto", "Geist", sans-serif;
   color: #6C7280;
   font-size: 1.125rem;
   line-height: 1.75rem;
@@ -40,7 +38,7 @@
   margin-top: 32px;
   background: linear-gradient(135deg, #39E19D 0%, #64F2C6 100%);
   color: #1B2240;
-  font-family: "Poppins", sans-serif;
+  font-family: "Poppins", "Geist", sans-serif;
   font-weight: 600;
   padding: 18px 32px;
   border-radius: 12px;

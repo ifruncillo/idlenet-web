@@ -38,25 +38,22 @@ export default function FileDropzone({ file, onFileSelect, accept = ".js,.py,.wa
       onDragOver={handleDrag}
       onDrop={handleDrop}
       className={`${styles.dropzone} ${dragActive ? styles.dropzoneActive : ''}`}
+      role="button"
+      tabIndex={0}
+      aria-label="File upload dropzone"
     >
       <input
         type="file"
         onChange={(e) => onFileSelect(e.target.files?.[0] || null)}
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          opacity: 0,
-          cursor: 'pointer'
-        }}
+        className={styles.fileInput}
         accept={accept}
+        aria-label="Select file for upload"
+        id="file-upload"
       />
 
       {file ? (
         <div>
-          <div style={{ fontSize: '64px', marginBottom: '20px' }}>✅</div>
+          <div style={{ fontSize: '64px', marginBottom: '20px' }} role="img" aria-label="Checkmark">✅</div>
           <p className={styles.fileName}>{file.name}</p>
           <p className={styles.fileSize}>
             {(file.size / 1024).toFixed(2)} KB ready to process
@@ -64,7 +61,7 @@ export default function FileDropzone({ file, onFileSelect, accept = ".js,.py,.wa
         </div>
       ) : (
         <div>
-          <div style={{ fontSize: '64px', marginBottom: '20px', opacity: 0.6 }}>📦</div>
+          <div style={{ fontSize: '64px', marginBottom: '20px', opacity: 0.6 }} role="img" aria-label="Package icon">📦</div>
           <p className={styles.dropzoneText}>
             Drop your code here
           </p>

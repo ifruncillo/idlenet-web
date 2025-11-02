@@ -2,8 +2,11 @@
 
 import FileDropzone from '@/components/FileDropzone'
 import { useFileUpload } from '@/hooks/useFileUpload'
+import { IDLENET_API_URL } from '@/lib/constants'
 import styles from '@/components/shared.module.css'
 
+// NOTE: This is a legacy upload page for testing purposes
+// Main upload flow is through /dashboard
 export default function UploadPage() {
   const { file, setFile, uploading, setUploading } = useFileUpload();
 
@@ -15,7 +18,7 @@ export default function UploadPage() {
     formData.append('file', file);
 
     try {
-      const uploadResponse = await fetch('https://idlenet-pilot-qi7t.vercel.app/api/jobs/upload', {
+      const uploadResponse = await fetch(`${IDLENET_API_URL}/api/jobs/upload`, {
         method: 'POST',
         body: formData
       });
@@ -26,11 +29,11 @@ export default function UploadPage() {
 
       const uploadData = await uploadResponse.json();
 
-      const jobResponse = await fetch('https://idlenet-pilot-qi7t.vercel.app/api/jobs/submit', {
+      const jobResponse = await fetch(`${IDLENET_API_URL}/api/jobs/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: 'test@example.com',
+          email: 'test@example.com', // Test email for legacy upload page
           type: 'javascript',
           artifactUrl: uploadData.artifactUrl,
           artifactSHA256: uploadData.sha256,
