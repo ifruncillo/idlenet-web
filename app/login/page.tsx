@@ -2,12 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  'https://qqsggrbxizugjrzoqkyv.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxc2dncmJ4aXp1Z2pyem9xa3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5MDMzODMsImV4cCI6MjA3NDQ3OTM4M30.LSUvRpJYCDNB8-Je7g5KWVpVgi8K6hR5qHqx7RpUS1o'
-)
+import { supabase } from '@/lib/supabase'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')

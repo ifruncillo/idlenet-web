@@ -1,0 +1,52 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Roboto:wght@400&display=swap");
+
+.dropzone {
+  border: 2px dashed rgba(57, 225, 157, 0.5);
+  border-radius: 16px;
+  padding: 80px 40px;
+  text-align: center;
+  background: rgba(57, 225, 157, 0.05);
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.dropzone:hover {
+  border-color: #39E19D;
+  background: rgba(57, 225, 157, 0.1);
+  transform: translateY(-2px);
+}
+
+.dropzoneActive {
+  border-color: #64F2C6;
+  background: rgba(57, 225, 157, 0.15);
+  transform: scale(1.02);
+}
+
+.dropzoneText {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: #FFF9F0;
+  margin-bottom: 8px;
+}
+
+.dropzoneSubtext {
+  font-family: "Roboto", sans-serif;
+  color: #6C7280;
+  font-size: 1rem;
+}
+
+.fileName {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  color: #39E19D;
+  font-size: 1.5rem;
+}
+
+.fileSize {
+  font-family: "Roboto", sans-serif;
+  color: #6C7280;
+  font-size: 1rem;
+  margin-top: 8px;
+}
