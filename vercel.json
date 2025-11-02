@@ -1,0 +1,20 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "env": {
+    "NEXT_PUBLIC_SUPABASE_URL": {
+      "description": "Supabase project URL",
+      "required": true
+    },
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": {
+      "description": "Supabase anonymous/public API key",
+      "required": true
+    },
+    "NEXT_PUBLIC_IDLENET_API_URL": {
+      "description": "IdleNet API URL (optional, defaults to https://idlenet-pilot-qi7t.vercel.app)",
+      "required": false
+    }
+  }
+}
